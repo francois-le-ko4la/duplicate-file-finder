@@ -1,0 +1,77 @@
+classDiagram
+  class LoggingMSG {
+    debug
+    error
+    info
+  }
+  class deque {
+    iterable : list
+    maxlen : int
+    append(x)
+    appendleft(x)
+    clear()
+    copy()
+    count(x)
+    extend(iterable)
+    extendleft(iterable)
+    index(x, start, end)
+    insert(i, x)
+    pop()
+    popleft()
+    remove(value)
+    reverse()
+    rotate(n)
+  }
+  class DetectDuplicate {
+    num_of_files
+    get_json() str
+  }
+  class LoggingMSG {
+    debug : str
+    error : str
+    info : str
+  }
+  class LoggingMSGCollection {
+    args
+    dump
+    elapse_time
+    logfile
+    num_of_files
+    path
+    python
+    python_import
+    result
+  }
+  class LoggingSetup {
+    default_format : str
+    default_level : str
+    encoding : str
+    file_format : str
+    json_dump : str
+    log_file : str
+    simple_format : str
+  }
+  class MyFile {
+    hash : Optional[str]
+    path : str
+    size : Optional[int]
+    get_hash(blocksize: int) MyFile
+    get_size(path: str) MyFile
+  }
+  class NamedTuple {
+  }
+  LoggingMSG --|> NamedTuple
+  LoggingMSGCollection --|> NamedTuple
+  LoggingSetup --|> NamedTuple
+  MyFile --|> NamedTuple
+  LoggingMSG --* LoggingMSGCollection : logfile
+  LoggingMSG --* LoggingMSGCollection : args
+  LoggingMSG --* LoggingMSGCollection : path
+  LoggingMSG --* LoggingMSGCollection : python
+  LoggingMSG --* LoggingMSGCollection : python_import
+  LoggingMSG --* LoggingMSGCollection : dump
+  LoggingMSG --* LoggingMSGCollection : result
+  LoggingMSG --* LoggingMSGCollection : num_of_files
+  LoggingMSG --* LoggingMSGCollection : elapse_time
+  deque --* DetectDuplicate : __hash
+  deque --* DetectDuplicate : __files

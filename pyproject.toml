@@ -1,0 +1,36 @@
+# -*- coding: utf-8 -*-
+[project]
+name = "duplicatefile"
+version = "0.1.0"
+authors = [
+  {name = "ko4la" }
+]
+description = "This module find duplicate files in a path."
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 5 - Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+    'rich>=12.6.0',
+    'rich_argparse>=0.6.0',
+    'xxhash>=3.1.0'
+    ]
+
+[project.optional-dependencies]
+dev = ["pylint", "pytest>=7.2.0", "mypy"]
+
+[project.scripts]
+find-duplicate = "duplicatefile.duplicatefile:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
