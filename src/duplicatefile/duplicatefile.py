@@ -63,7 +63,7 @@ EX_CANTCREAT: int = getattr(os, 'EX_USAGE', 73)
 
 # python
 CHK_PYT_MIN: tuple[int, int, int] = (3, 7, 0)
-ROOT_DIR: str = os.path.abspath(os.path.dirname(__file__))
+CWD: str = os.path.abspath(os.getcwd())
 PID: int = os.getpid()
 
 
@@ -78,11 +78,11 @@ class LoggingSetup(NamedTuple):
 
     """
     default_level: str = 'INFO'
-    log_file: str = f'{ROOT_DIR}/report.log'
+    log_file: str = f'{CWD}/report.log'
     default_format: str = '%(message)s'
     simple_format: str = '%(levelname)s %(message)s'
     file_format: str = '%(asctime)s - %(levelname)s - %(message)s'
-    json_dump: str = f'{ROOT_DIR}/dump_{PID}.json'
+    json_dump: str = f'{CWD}/dump_{PID}.json'
     encoding: str = 'utf-8'
 
 
