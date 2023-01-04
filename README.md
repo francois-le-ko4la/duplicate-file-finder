@@ -1,8 +1,9 @@
 # Duplicate file finder
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
-![](./img/pylint-passing.svg)
-![](./img/pypi-passing.svg)
-![](./img/work-on-linux_macos_windows.svg)
+![](./doc/pycodestyle-passing.svg)
+![](./doc/pylint-passing.svg)
+![](./doc/mypy-passing.svg)
+
 
 ## Description:
 

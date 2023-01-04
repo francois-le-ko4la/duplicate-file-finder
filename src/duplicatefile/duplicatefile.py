@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Metadata with importlib_metadata:
+# mypy: disable-error-code=no-redef
 """
 DESCRIPTION:
     This module find duplicate files in a path using "-p <path>" option with
@@ -13,6 +15,11 @@ import logging
 import os
 import sys
 import textwrap
+try:
+    from importlib import metadata
+except ImportError:
+    import importlib_metadata as metadata  # type: ignore
+
 from argparse import Namespace, ArgumentParser, RawDescriptionHelpFormatter, \
     _ArgumentGroup
 from collections import Counter, deque
@@ -52,8 +59,9 @@ HISTORY:
 # Parameters
 # ------------------------------------------------------------------------------
 # author and release
-__version__: str = '0.1.0'
-__author__: str = 'Ko4la'
+__pkg_name__: str = "duplicatefile"
+__version__: str = metadata.version(__pkg_name__)
+__author__: str = metadata.metadata(__pkg_name__)["Author"]
 
 # exit values
 EX_OK: int = getattr(os, 'EX_OK', 0)
@@ -207,10 +215,6 @@ def get_argparser() -> ArgumentParser:
     >>> type(a)
     <class 'argparse.ArgumentParser'>
 
-    >>> a.print_help()
-    USAGE: pytest [-h] [--version] [--debug] [--logfile] [--dump] -p PATH
-    ...
-
     """
     cur_formatter: Type[
         Union[
@@ -314,6 +318,7 @@ class MyFile(NamedTuple):
                 hasher.update(buf)
                 buf = file.read(blocksize)
         # Get the hashed representation
+        # pylint: disable=no-member
         return self._replace(hash=hasher.hexdigest())
 
     def __repr__(self) -> str:

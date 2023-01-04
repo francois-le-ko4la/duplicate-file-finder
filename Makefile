@@ -14,7 +14,7 @@ default:
 	@echo '           make uninstall                 remove the package'
 	@echo '    dev  : make venv                      install venv'
 	@echo '           source venv/bin/activate       activate venv'
-	@echo '           make devinstall                install dev packages'
+	@echo '           make dev                       install dev packages'
 	@echo '           make test                      test'
 	@echo '           make doc                       update uml'
 	@echo
@@ -29,14 +29,13 @@ venv:
 	@pip3 install virtualenv --user
 	@virtualenv venv
 
-devinstall:
+dev:
 	@pip3 install -e ".[dev]"
 
 test:
-	@pytest . --doctest-modules
-	@pylint src/$(PACKAGE_DIR)/$(PACKAGE_NAME).py
+	@pytest
 
 doc:
-	@pyreverse -ASmy -o mmd src/$(PACKAGE_DIR)/$(PACKAGE_NAME).py
+	@pyreverse -ASmy -o mmd src/$(PACKAGE_DIR)/$(PACKAGE_NAME).py -d doc
 
 .PHONY: default install uninstall dev test doc

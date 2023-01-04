@@ -26,7 +26,16 @@ dependencies = [
     ]
 
 [project.optional-dependencies]
-dev = ["pylint", "pytest>=7.2.0", "mypy"]
+dev = [
+    "pycodestyle>=2.3.1",
+    "pytest>=7.2.0",
+    "pylint",
+    "mypy",
+    "pytest-pylint",
+    "pytest-pycodestyle",
+    "pytest-mypy",
+    "types-setuptools",
+    "types-PyYAML"]
 
 [project.scripts]
 find-duplicate = "duplicatefile.duplicatefile:main"
@@ -34,3 +43,12 @@ find-duplicate = "duplicatefile.duplicatefile:main"
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+minversion = "7.2"
+addopts = "-v -rfEX --pycodestyle --doctest-modules --mypy --pylint --strict-markers"
+python_files = ["*.py"]
+xfail_strict = true
+filterwarnings = [
+    "ignore:.*U.*mode is deprecated:DeprecationWarning",
+    "ignore::DeprecationWarning"]
