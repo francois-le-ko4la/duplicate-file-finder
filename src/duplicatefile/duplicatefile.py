@@ -20,8 +20,7 @@ try:
 except ImportError:
     import importlib_metadata as metadata  # type: ignore
 
-from argparse import Namespace, ArgumentParser, RawDescriptionHelpFormatter, \
-    _ArgumentGroup
+from argparse import Namespace, ArgumentParser, RawDescriptionHelpFormatter
 from collections import Counter, deque
 from logging import Logger
 from time import perf_counter
@@ -214,7 +213,6 @@ def get_argparser() -> ArgumentParser:
     >>> a = get_argparser()
     >>> type(a)
     <class 'argparse.ArgumentParser'>
-
     """
     cur_formatter: Type[
         Union[
@@ -242,7 +240,7 @@ def get_argparser() -> ArgumentParser:
         '--dump',
         help='generate a summary - "summary_<id>.json"',
         default=False, action='store_true')
-    required_argument: _ArgumentGroup = parser.add_argument_group(
+    required_argument = parser.add_argument_group(
         'required arguments')
     required_argument.add_argument(
         '-p', '--path',

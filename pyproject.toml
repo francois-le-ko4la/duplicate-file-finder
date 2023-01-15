@@ -46,7 +46,14 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 minversion = "7.2"
-addopts = "-v -rfEX --pycodestyle --doctest-modules --mypy --pylint --strict-markers"
+addopts = [
+    "-v",
+    "--pycodestyle",
+    "--doctest-modules",
+    "--mypy",
+    "--pylint",
+    "--strict-markers"
+]
 python_files = ["*.py"]
 xfail_strict = true
 filterwarnings = [

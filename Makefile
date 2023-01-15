@@ -33,7 +33,7 @@ dev:
 	@pip3 install -e ".[dev]"
 
 test:
-	@pytest
+	@pytest --pyargs $(PACKAGE_NAME)
 
 doc:
 	@pyreverse -ASmy -o mmd src/$(PACKAGE_DIR)/$(PACKAGE_NAME).py -d doc
