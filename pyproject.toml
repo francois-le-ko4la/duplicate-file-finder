@@ -18,6 +18,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
+    "OSI Approved :: GNU General Public License v3 (GPLv3)",
+
 ]
 dependencies = [
     'rich>=12.6.0',
