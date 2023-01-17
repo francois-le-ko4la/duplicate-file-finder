@@ -3,6 +3,8 @@
 # Metadata with importlib_metadata:
 # mypy: disable-error-code=no-redef
 """
+duplicatefile: Main module.
+
 DESCRIPTION:
     This module find duplicate files in a path using "-p <path>" option with
     the command line.
@@ -15,16 +17,18 @@ import logging
 import os
 import sys
 import textwrap
+
 try:
     from importlib import metadata
 except ImportError:
     import importlib_metadata as metadata  # type: ignore
 
-from argparse import Namespace, ArgumentParser, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from collections import Counter, deque
+from enum import Enum, unique
 from logging import Logger
 from time import perf_counter
-from typing import Type, Optional, Union, NamedTuple, Any, BinaryIO
+from typing import Any, BinaryIO, NamedTuple, Optional, Type, Union
 
 from xxhash import xxh3_64
 
@@ -62,11 +66,17 @@ __pkg_name__: str = "duplicatefile"
 __version__: str = metadata.version(__pkg_name__)
 __author__: str = metadata.metadata(__pkg_name__)["Author"]
 
+
 # exit values
-EX_OK: int = getattr(os, 'EX_OK', 0)
-EX_USAGE: int = getattr(os, 'EX_USAGE', 64)
-EX_CONFIG: int = getattr(os, 'EX_USAGE', 78)
-EX_CANTCREAT: int = getattr(os, 'EX_USAGE', 73)
+@unique
+class ExitStatus(Enum):
+    """Define Exit status."""
+
+    EX_OK: int = getattr(os, 'EX_OK', 0)
+    EX_USAGE: int = getattr(os, 'EX_USAGE', 64)
+    EX_CANTCREAT: int = getattr(os, 'EX_CANTCREAT', 73)
+    EX_CONFIG: int = getattr(os, 'EX_CONFIG', 78)
+
 
 # python
 CHK_PYT_MIN: tuple[int, int, int] = (3, 7, 0)
@@ -76,7 +86,7 @@ PID: int = os.getpid()
 
 # logging
 class LoggingSetup(NamedTuple):
-    """Logging Parameters
+    """Define logging Parameters.
 
     Examples:
     >>> my_setup = LoggingSetup()
@@ -84,6 +94,7 @@ class LoggingSetup(NamedTuple):
     'INFO'
 
     """
+
     default_level: str = 'INFO'
     log_file: str = f'{CWD}/report.log'
     default_format: str = '%(message)s'
@@ -93,59 +104,61 @@ class LoggingSetup(NamedTuple):
     encoding: str = 'utf-8'
 
 
-class LoggingMSG(NamedTuple):
-    """Messages with different sev
+class EventMSG(NamedTuple):
+    """Define Messages with different sev.
+
+    Attributes:
+        info (str): message for info ("" by default)
+        warning (str): message for warning ("" by default)
+        error (str): message for error ("" by default)
+        debug (str): message for debug ("" by default)
 
     Examples:
-    >>> logfile = LoggingMSG(info="Log file used: %s")
-    >>> logfile.info
-    'Log file used: %s'
+        >>> logfile = EventMSG(info="Log file used: %s")
+        >>> logfile.info
+        'Log file used: %s'
 
     """
+
     info: str = ""
+    warning: str = ""
     error: str = ""
     debug: str = ""
 
 
-class LoggingMSGCollection(NamedTuple):
-    """All logging messages
+class LogMessages(NamedTuple):
+    """Set standard logging messages."""
 
-    Examples:
-        >>> log_msg = LoggingMSGCollection()
-        >>> log_msg.logfile.info
-        'Log file used: %s'
-
-    """
-    logfile: LoggingMSG = LoggingMSG(
+    logfile: EventMSG = EventMSG(
         info="Log file used: %s")
-    args: LoggingMSG = LoggingMSG(
+    args: EventMSG = EventMSG(
         debug="Arguments: %s")
-    path: LoggingMSG = LoggingMSG(
+    path: EventMSG = EventMSG(
         info="Path : '%s'",
         error="Path is not a folder : %s",
         debug="")
-    python: LoggingMSG = LoggingMSG(
+    python: EventMSG = EventMSG(
         info="Python version is supported: %s",
         error="Python version is not supported: %s",
         debug="Python: %s")
-    python_import: LoggingMSG = LoggingMSG(
+    python_import: EventMSG = EventMSG(
         info="Python modules imported.",
         error=f"Install modules. Use ./{os.path.basename(__file__)} --help",
         debug="IMPORT MSG: %s")
-    dump: LoggingMSG = LoggingMSG(
+    dump: EventMSG = EventMSG(
         info="New report has been created: %s",
         error="New report has not been created.",
         debug="New report cannot be saved:")
-    result: LoggingMSG = LoggingMSG(
+    result: EventMSG = EventMSG(
         info="Result:\n%s")
-    num_of_files: LoggingMSG = LoggingMSG(
+    num_of_files: EventMSG = EventMSG(
         info="Number of files: %s")
-    elapse_time: LoggingMSG = LoggingMSG(
+    elapse_time: EventMSG = EventMSG(
         info="Elapse time: %s s")
 
 
-LOGGING_SETUP: LoggingSetup = LoggingSetup()
-LOGGING_MSG: LoggingMSGCollection = LoggingMSGCollection()
+LOG_SETUP: LoggingSetup = LoggingSetup()
+LOG_MSG: LogMessages = LogMessages()
 ARG_STYLE: dict[str, str] = {
     'argparse.yellow': 'yellow',
     'argparse.byellow': 'yellow bold',
@@ -185,13 +198,13 @@ if os.name == "nt":
 # ------------------------------------------------------------------------------
 current_handlers: list[
     Union[logging.StreamHandler, RichHandler]] = [logging.StreamHandler()]
-current_format: str = LOGGING_SETUP.simple_format
+current_format: str = LOG_SETUP.simple_format
 if IMPORT_DONE:
     current_handlers = [RichHandler(rich_tracebacks=True, show_time=False)]
-    current_format = LOGGING_SETUP.default_format
+    current_format = LOG_SETUP.default_format
 
 logging.basicConfig(
-    level=LOGGING_SETUP.default_level,
+    level=LOG_SETUP.default_level,
     format=current_format,
     handlers=current_handlers
 )
@@ -203,16 +216,15 @@ logger: Logger = logging.getLogger(__name__)
 # arguments and options
 # ------------------------------------------------------------------------------
 def get_argparser() -> ArgumentParser:
-    """
-    This function describe the argument parser and return it.
+    """Define the argument parser.
 
+    This function define the argument parser and return it.
     Returns:
         ArgumentParser
-
     Examples:
-    >>> a = get_argparser()
-    >>> type(a)
-    <class 'argparse.ArgumentParser'>
+        >>> a = get_argparser()
+        >>> type(a)
+        <class 'argparse.ArgumentParser'>
     """
     cur_formatter: Type[
         Union[
@@ -256,7 +268,8 @@ def get_argparser() -> ArgumentParser:
 # File management
 # ------------------------------------------------------------------------------
 class MyFile(NamedTuple):
-    """This class describe a file with a NamedTuple
+    """Describe a file with a NamedTuple.
+
     @classmethod is used to init the objects correctly.
 
     Notes:
@@ -266,14 +279,25 @@ class MyFile(NamedTuple):
         Hash information consumes resources, and it will calculate later with
         get_hash function to create a new NamedTuple.
 
+    Examples:
+        >>> test = MyFile.get_size("test_fic/doc.txt")
+        >>> test
+        MyFile(path='test_fic/doc.txt', size=544)
+        >>> test = test.get_hash()
+        >>> test
+        MyFile(path='test_fic/doc.txt', size=544, hash='a5cd732df22bfdbd')
+
     """
+
     path: str
     size: Optional[int] = None
     hash: Optional[str] = None
 
     @classmethod
     def get_size(cls, path: str) -> MyFile:
-        """ This function create the MyFile object with the file's path,
+        """Define a Myfile obj with path.
+
+        This function create the MyFile object with the file's path,
         file's size is initialized by default and hash is None by default.
         The path is not tested here, because we use os.walk to get the file
         list.
@@ -285,16 +309,18 @@ class MyFile(NamedTuple):
             MyFile
 
         Examples:
-            >>> a = MyFile.get_size('test_fic/doc.txt')
-            >>> a
+            >>> test = MyFile.get_size('test_fic/doc.txt')
+            >>> test
             MyFile(path='test_fic/doc.txt', size=544)
 
         """
         return cls(path, os.stat(path).st_size)
 
     def get_hash(self, blocksize: int = 65536) -> MyFile:
-        """ This function calculate the file's hash and create a new MyFile
-        object with a MyFile object.
+        """Calculate file's hash and generate a new obj.
+
+        This function is used on an existing Myfile obj and recreate
+        a new MyFile obj.
 
         Args:
           blocksize:  blocksize used to read the file. (Default value = 65536)
@@ -302,9 +328,9 @@ class MyFile(NamedTuple):
         Returns:
             MyFile
 
-            >>> a = MyFile.get_size('test_fic/doc.txt')
-            >>> b = a.get_hash()
-            >>> b
+            >>> test = MyFile.get_size('test_fic/doc.txt')
+            >>> test = test.get_hash()
+            >>> test
             MyFile(path='test_fic/doc.txt', size=544, hash='a5cd732df22bfdbd')
 
         """
@@ -320,6 +346,7 @@ class MyFile(NamedTuple):
         return self._replace(hash=hasher.hexdigest())
 
     def __repr__(self) -> str:
+        """Get the repr."""
         _repr: str = f"path='{self.path}', size={self.size}"
         if self.hash is not None:
             _repr = f"{_repr}, hash='{self.hash}'"
@@ -327,19 +354,22 @@ class MyFile(NamedTuple):
 
 
 class DetectDuplicate:
-    """Class to organize and find duplicate files"""
+    """Class to organize and find duplicate files."""
+
     __path: str
     __files: deque[MyFile]
     __hash: deque[list[MyFile]]
     __summary: dict[str, Any]
 
     def __init__(self, path: str) -> None:
+        """Get the Path init internal attributes."""
         self.__path = path
         self.__get_files()
         self.__find_duplicate()
         self.__gen_details()
 
     def __str__(self) -> str:
+        """Define the str function."""
         result = ""
         for cur_hash in self.__hash:
             result = "%s\n- Same files (%s):\n -> '%s'" % (
@@ -350,7 +380,7 @@ class DetectDuplicate:
 
     @property
     def num_of_files(self) -> int:
-        """ This function return the number of files.
+        """Get the number of files.
 
         Returns:
             int: Number of files.
@@ -364,7 +394,7 @@ class DetectDuplicate:
         return len(self.__files)
 
     def get_json(self) -> str:
-        """This function returns the result (JSON format).
+        """Get the result (JSON format).
 
         Returns:
             str: result (JSON).
@@ -413,7 +443,9 @@ class DetectDuplicate:
 # Main function / Interface: check (args/environment) and call fix_report
 # ------------------------------------------------------------------------------
 def check_python() -> bool:
-    """This function check Python version, log the result and return a status
+    """Check python version.
+
+    This function check Python version, log the result and return a status
     True/False.
 
     Returns:
@@ -428,16 +460,18 @@ def check_python() -> bool:
     current_version: tuple[int, int, int] = sys.version_info[:3]
     if current_version < CHK_PYT_MIN:
         logger.error(
-            LOGGING_MSG.python.error, ".".join(map(str, current_version)))
+            LOG_MSG.python.error, ".".join(map(str, current_version)))
         return False
     logger.info(
-        LOGGING_MSG.python.info, ".".join(map(str, current_version)))
-    logger.debug(LOGGING_MSG.python.debug, sys.version)
+        LOG_MSG.python.info, ".".join(map(str, current_version)))
+    logger.debug(LOG_MSG.python.debug, sys.version)
     return True
 
 
 def check_import() -> bool:
-    """This function check modules import, log the result and return a status
+    """Check modules import.
+
+    This function check the modules, log the result and return a status
     True/False.
 
     Returns:
@@ -449,26 +483,30 @@ def check_import() -> bool:
 
     """
     if IMPORT_DONE:
-        logger.info(LOGGING_MSG.python_import.info)
+        logger.info(LOG_MSG.python_import.info)
         return True
-    logger.error(LOGGING_MSG.python_import.error)
-    logger.debug(LOGGING_MSG.python_import.debug, IMPORT_EXCEPTION)
+    logger.error(LOG_MSG.python_import.error)
+    logger.debug(LOG_MSG.python_import.debug, IMPORT_EXCEPTION)
     return False
 
 
 def define_logfile() -> None:
-    """
+    """Define the logfile.
+
     This function set up the log to push log events in the report file.
+
     """
-    log_formatter = logging.Formatter(LOGGING_SETUP.file_format)
-    file_handler = logging.FileHandler(LOGGING_SETUP.log_file)
+    log_formatter = logging.Formatter(LOG_SETUP.file_format)
+    file_handler = logging.FileHandler(LOG_SETUP.log_file)
     file_handler.setFormatter(log_formatter)
     logger.addHandler(file_handler)
-    logger.info(LOGGING_MSG.logfile.info, LOGGING_SETUP.log_file)
+    logger.info(LOG_MSG.logfile.info, LOG_SETUP.log_file)
 
 
 def check_arg(args: Namespace) -> bool:
-    """This function check user's arguments, log info/error and return a status
+    """Check user's arguments.
+
+    This function check user's arguments, log info/error and return a status
     True/False.
 
     Args:
@@ -483,20 +521,21 @@ def check_arg(args: Namespace) -> bool:
         True
 
     """
-    logger.debug(LOGGING_MSG.args.debug, args)
+    logger.debug(LOG_MSG.args.debug, args)
 
     if not os.path.isdir(args.path):
-        logger.error(LOGGING_MSG.path.error, args.path)
+        logger.error(LOG_MSG.path.error, args.path)
         return False
 
-    logger.info(LOGGING_MSG.path.info, args.path)
+    logger.info(LOG_MSG.path.info, args.path)
 
     return True
 
 
 def dump_result(data: str) -> bool:
-    """This function dump the result in a JSON file, log info/error and
-    return a status True/False.
+    """Dump the result in a JSON file.
+
+    This function dump the JSON, log info/error and return a status True/False.
 
     Args:
       data: JSON str.
@@ -506,20 +545,19 @@ def dump_result(data: str) -> bool:
 
     """
     try:
-        with open(LOGGING_SETUP.json_dump, encoding=LOGGING_SETUP.encoding,
+        with open(LOG_SETUP.json_dump, encoding=LOG_SETUP.encoding,
                   mode='w') as file:
             file.write(data)
     except (IOError, FileExistsError):
-        logger.error(LOGGING_MSG.dump.error)
-        logger.debug(LOGGING_MSG.dump.debug, exc_info=True)
+        logger.error(LOG_MSG.dump.error)
+        logger.debug(LOG_MSG.dump.debug, exc_info=True)
         return False
-    logger.info(LOGGING_MSG.dump.info, LOGGING_SETUP.json_dump)
+    logger.info(LOG_MSG.dump.info, LOG_SETUP.json_dump)
     return True
 
 
 def main() -> int:
-    """
-    This function is the main function.
+    """Define the main function.
 
     Returns:
         int: exit value
@@ -534,20 +572,20 @@ def main() -> int:
     if args.logfile:
         define_logfile()
     if not check_python() or not check_import():
-        return EX_CONFIG
+        return ExitStatus.EX_CONFIG.value
     if not check_arg(args):
-        return EX_USAGE
+        return ExitStatus.EX_USAGE.value
 
     detect_duplicate = DetectDuplicate(os.path.abspath(args.path))
     time_stop = perf_counter()
-    logger.info(LOGGING_MSG.result.info, detect_duplicate)
+    logger.info(LOG_MSG.result.info, detect_duplicate)
 
     if args.dump and not dump_result(detect_duplicate.get_json()):
-        return EX_CANTCREAT
+        return ExitStatus.EX_CANTCREAT.value
 
-    logger.info(LOGGING_MSG.num_of_files.info, detect_duplicate.num_of_files)
-    logger.info(LOGGING_MSG.elapse_time.info, round(time_stop-time_start, 2))
-    return EX_OK
+    logger.info(LOG_MSG.num_of_files.info, detect_duplicate.num_of_files)
+    logger.info(LOG_MSG.elapse_time.info, round(time_stop-time_start, 2))
+    return ExitStatus.EX_OK.value
 
 
 if __name__ == '__main__':

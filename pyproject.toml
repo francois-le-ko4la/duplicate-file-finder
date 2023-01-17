@@ -34,9 +34,12 @@ dev = [
     "pytest>=7.2.0",
     "pylint",
     "mypy",
+    "pydocstyle",
     "pytest-pylint",
     "pytest-pycodestyle",
     "pytest-mypy",
+    "pytest-pydocstyle",
+    "pytest-isort",
     "types-setuptools",
     "types-PyYAML"]
 
@@ -54,7 +57,9 @@ addopts = [
     "--pycodestyle",
     "--doctest-modules",
     "--mypy",
+    "--pydocstyle",
     "--pylint",
+    "--isort",
     "--strict-markers"
 ]
 python_files = ["*.py"]
