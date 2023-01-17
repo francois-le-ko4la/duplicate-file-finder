@@ -102,10 +102,11 @@ $ make test
 #### UML Diagram
 ```mermaid
 classDiagram
-  class LoggingMSG {
+  class EventMSG {
     debug
     error
     info
+    warning
   }
   class deque {
     iterable : list
@@ -129,12 +130,16 @@ classDiagram
     num_of_files
     get_json() str
   }
-  class LoggingMSG {
+  class EventMSG {
     debug : str
     error : str
     info : str
+    warning : str
   }
-  class LoggingMSGCollection {
+  class ExitStatus {
+    name
+  }
+  class LogMessages {
     args
     dump
     elapse_time
@@ -161,21 +166,32 @@ classDiagram
     get_hash(blocksize: int) MyFile
     get_size(path: str) MyFile
   }
+  class Enum {
+    name()
+    value()
+  }
+  class IntEnum {
+  }
+  class ReprEnum {
+  }
   class NamedTuple {
   }
-  LoggingMSG --|> NamedTuple
-  LoggingMSGCollection --|> NamedTuple
+  EventMSG --|> NamedTuple
+  ExitStatus --|> IntEnum
+  LogMessages --|> NamedTuple
   LoggingSetup --|> NamedTuple
   MyFile --|> NamedTuple
-  LoggingMSG --* LoggingMSGCollection : logfile
-  LoggingMSG --* LoggingMSGCollection : args
-  LoggingMSG --* LoggingMSGCollection : path
-  LoggingMSG --* LoggingMSGCollection : python
-  LoggingMSG --* LoggingMSGCollection : python_import
-  LoggingMSG --* LoggingMSGCollection : dump
-  LoggingMSG --* LoggingMSGCollection : result
-  LoggingMSG --* LoggingMSGCollection : num_of_files
-  LoggingMSG --* LoggingMSGCollection : elapse_time
+  IntEnum --|> ReprEnum
+  ReprEnum --|> Enum
+  EventMSG --* LogMessages : logfile
+  EventMSG --* LogMessages : args
+  EventMSG --* LogMessages : path
+  EventMSG --* LogMessages : python
+  EventMSG --* LogMessages : python_import
+  EventMSG --* LogMessages : dump
+  EventMSG --* LogMessages : result
+  EventMSG --* LogMessages : num_of_files
+  EventMSG --* LogMessages : elapse_time
   deque --* DetectDuplicate : __hash
   deque --* DetectDuplicate : __files
 ```

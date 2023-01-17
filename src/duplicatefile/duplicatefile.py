@@ -25,7 +25,7 @@ except ImportError:
 
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from collections import Counter, deque
-from enum import Enum, unique
+from enum import IntEnum, unique
 from logging import Logger
 from time import perf_counter
 from typing import Any, BinaryIO, NamedTuple, Optional, Type, Union
@@ -69,7 +69,7 @@ __author__: str = metadata.metadata(__pkg_name__)["Author"]
 
 # exit values
 @unique
-class ExitStatus(Enum):
+class ExitStatus(IntEnum):
     """Define Exit status."""
 
     EX_OK: int = getattr(os, 'EX_OK', 0)
@@ -556,7 +556,7 @@ def dump_result(data: str) -> bool:
     return True
 
 
-def main() -> int:
+def main() -> ExitStatus:
     """Define the main function.
 
     Returns:
@@ -572,20 +572,20 @@ def main() -> int:
     if args.logfile:
         define_logfile()
     if not check_python() or not check_import():
-        return ExitStatus.EX_CONFIG.value
+        return ExitStatus.EX_CONFIG
     if not check_arg(args):
-        return ExitStatus.EX_USAGE.value
+        return ExitStatus.EX_USAGE
 
     detect_duplicate = DetectDuplicate(os.path.abspath(args.path))
     time_stop = perf_counter()
     logger.info(LOG_MSG.result.info, detect_duplicate)
 
     if args.dump and not dump_result(detect_duplicate.get_json()):
-        return ExitStatus.EX_CANTCREAT.value
+        return ExitStatus.EX_CANTCREAT
 
     logger.info(LOG_MSG.num_of_files.info, detect_duplicate.num_of_files)
     logger.info(LOG_MSG.elapse_time.info, round(time_stop-time_start, 2))
-    return ExitStatus.EX_OK.value
+    return ExitStatus.EX_OK
 
 
 if __name__ == '__main__':
