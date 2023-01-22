@@ -193,6 +193,106 @@ strict_equality = true
 
 
 ```
+## UML Diagram:
+
+```mermaid
+
+classDiagram
+  class EventMSG {
+    debug
+    error
+    info
+    warning
+  }
+  class deque {
+    iterable : list
+    maxlen : int
+    append(x)
+    appendleft(x)
+    clear()
+    copy()
+    count(x)
+    extend(iterable)
+    extendleft(iterable)
+    index(x, start, end)
+    insert(i, x)
+    pop()
+    popleft()
+    remove(value)
+    reverse()
+    rotate(n)
+  }
+  class DetectDuplicate {
+    num_of_files
+    get_json() str
+  }
+  class EventMSG {
+    debug : str
+    error : str
+    info : str
+    warning : str
+  }
+  class ExitStatus {
+    name
+  }
+  class LogMessages {
+    args
+    dump
+    elapse_time
+    logfile
+    num_of_files
+    path
+    python
+    python_import
+    result
+  }
+  class LoggingSetup {
+    default_format : str
+    default_level : str
+    encoding : str
+    file_format : str
+    json_dump : str
+    log_file : str
+    simple_format : str
+  }
+  class MyFile {
+    hash : Optional[str]
+    path : str
+    size : Optional[int]
+    get_hash(blocksize: int) MyFile
+    get_size(path: str) MyFile
+  }
+  class Enum {
+    name()
+    value()
+  }
+  class IntEnum {
+  }
+  class ReprEnum {
+  }
+  class NamedTuple {
+  }
+  EventMSG --|> NamedTuple
+  ExitStatus --|> IntEnum
+  LogMessages --|> NamedTuple
+  LoggingSetup --|> NamedTuple
+  MyFile --|> NamedTuple
+  IntEnum --|> ReprEnum
+  ReprEnum --|> Enum
+  EventMSG --* LogMessages : logfile
+  EventMSG --* LogMessages : args
+  EventMSG --* LogMessages : path
+  EventMSG --* LogMessages : python
+  EventMSG --* LogMessages : python_import
+  EventMSG --* LogMessages : dump
+  EventMSG --* LogMessages : result
+  EventMSG --* LogMessages : num_of_files
+  EventMSG --* LogMessages : elapse_time
+  deque --* DetectDuplicate : __hash
+  deque --* DetectDuplicate : __files
+
+
+```
 ## Objects:
 
 [ExitStatus()](#exitstatus)<br />
@@ -203,15 +303,9 @@ strict_equality = true
 [MyFile()](#myfile)<br />
 [MyFile.get_size()](#myfileget_size)<br />
 [MyFile.get_hash()](#myfileget_hash)<br />
-[MyFile.__repr__()](#myfilerepr)<br />
 [DetectDuplicate()](#detectduplicate)<br />
-[DetectDuplicate.__init__()](#detectduplicateinit)<br />
-[DetectDuplicate.__str__()](#detectduplicatestr)<br />
 [@Property DetectDuplicate.num_of_files()](#property-detectduplicatenum_of_files)<br />
 [DetectDuplicate.get_json()](#detectduplicateget_json)<br />
-[DetectDuplicate.__find_duplicate()](#detectduplicate__find_duplicate)<br />
-[DetectDuplicate.__get_files()](#detectduplicate__get_files)<br />
-[DetectDuplicate.__gen_details()](#detectduplicate__gen_details)<br />
 [check_python()](#check_python)<br />
 [define_logfile()](#define_logfile)<br />
 [check_arg()](#check_arg)<br />
@@ -381,15 +475,6 @@ a new MyFile obj.
     MyFile(path='test_fic/doc.txt', size=544, hash='a5cd732df22bfdbd')
 
 </pre>
-#### MyFile.__repr__()
-```python
-def MyFile.__repr__(self) -> str:
-```
-<pre>
-
-Get the repr.
-
-</pre>
 ### DetectDuplicate()
 ```python
 class DetectDuplicate():
@@ -397,24 +482,6 @@ class DetectDuplicate():
 <pre>
 
 Class to organize and find duplicate files.
-
-</pre>
-#### DetectDuplicate.__init__()
-```python
-def DetectDuplicate.__init__(self, path: str) -> None:
-```
-<pre>
-
-Get the Path init internal attributes.
-
-</pre>
-#### DetectDuplicate.__str__()
-```python
-def DetectDuplicate.__str__(self) -> str:
-```
-<pre>
-
-Define the str function.
 
 </pre>
 #### @Property DetectDuplicate.num_of_files()
@@ -462,33 +529,6 @@ Get the result (JSON format).
 
 
 ```
-#### DetectDuplicate.__find_duplicate()
-```python
-def DetectDuplicate.__find_duplicate(self) -> None:
-```
-<pre>
-
-None
-
-</pre>
-#### DetectDuplicate.__get_files()
-```python
-def DetectDuplicate.__get_files(self) -> None:
-```
-<pre>
-
-None
-
-</pre>
-#### DetectDuplicate.__gen_details()
-```python
-def DetectDuplicate.__gen_details(self) -> None:
-```
-<pre>
-
-None
-
-</pre>
 ### check_python()
 ```python
 def check_python() -> bool:
