@@ -43,6 +43,9 @@ dev = [
     "types-setuptools",
     "types-PyYAML"]
 
+[project.urls]
+"Homepage" = "https://github.com/francois-le-ko4la/duplicate-file-finder"
+
 [project.scripts]
 find-duplicate = "duplicatefile.duplicatefile:main"
 
