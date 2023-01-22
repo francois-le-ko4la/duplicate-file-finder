@@ -23,25 +23,16 @@ try:
 except ImportError:
     import importlib_metadata as metadata  # type: ignore
 
-from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, Namespace
 from collections import Counter, deque
 from enum import IntEnum, unique
 from logging import Logger
 from time import perf_counter
-from typing import Any, BinaryIO, NamedTuple, Optional, Type, Union
+from typing import Any, BinaryIO, NamedTuple, Optional
 
-from xxhash import xxh3_64
-
-IMPORT_DONE: bool = False
-IMPORT_EXCEPTION: ModuleNotFoundError
-try:
-    import xxhash
-    from rich.logging import RichHandler
-    from rich_argparse import RawDescriptionRichHelpFormatter
-    IMPORT_DONE = True
-except ModuleNotFoundError as e:
-    IMPORT_EXCEPTION = e
-    IMPORT_DONE = False
+import xxhash
+from rich.logging import RichHandler
+from rich_argparse import RawDescriptionRichHelpFormatter
 
 # ------------------------------------------------------------------------------
 # README
@@ -169,7 +160,7 @@ ARG_STYLE: dict[str, str] = {
     'argparse.bgreen': 'green bold',
     'argparse.magenta': 'magenta',
     'argparse.grey': 'grey37 bold'}
-ARG_HIGHLIGHT: list = [
+ARG_HIGHLIGHT: list[str] = [
     r'(?P<cyan>INFO)',
     r'(?P<red>ERROR)',
     r'(?P<green>DEBUG)',
@@ -196,12 +187,8 @@ if os.name == "nt":
 # ------------------------------------------------------------------------------
 # logging
 # ------------------------------------------------------------------------------
-current_handlers: list[
-    Union[logging.StreamHandler, RichHandler]] = [logging.StreamHandler()]
-current_format: str = LOG_SETUP.simple_format
-if IMPORT_DONE:
-    current_handlers = [RichHandler(rich_tracebacks=True, show_time=False)]
-    current_format = LOG_SETUP.default_format
+current_handlers = [RichHandler(rich_tracebacks=True, show_time=False)]
+current_format = LOG_SETUP.default_format
 
 logging.basicConfig(
     level=LOG_SETUP.default_level,
@@ -226,14 +213,9 @@ def get_argparser() -> ArgumentParser:
         >>> type(a)
         <class 'argparse.ArgumentParser'>
     """
-    cur_formatter: Type[
-        Union[
-            RawDescriptionHelpFormatter,
-            RawDescriptionRichHelpFormatter]] = RawDescriptionHelpFormatter
-    if IMPORT_DONE:
-        cur_formatter = RawDescriptionRichHelpFormatter
-        RawDescriptionRichHelpFormatter.styles.update(ARG_STYLE)
-        RawDescriptionRichHelpFormatter.highlights.extend(ARG_HIGHLIGHT)
+    cur_formatter = RawDescriptionRichHelpFormatter
+    RawDescriptionRichHelpFormatter.styles.update(ARG_STYLE)
+    RawDescriptionRichHelpFormatter.highlights.extend(ARG_HIGHLIGHT)
 
     version: str = f'%(prog)s {__version__}'
     parser: ArgumentParser = ArgumentParser(
@@ -334,7 +316,7 @@ class MyFile(NamedTuple):
             MyFile(path='test_fic/doc.txt', size=544, hash='a5cd732df22bfdbd')
 
         """
-        hasher: xxh3_64 = xxhash.xxh64()
+        hasher: xxhash.xxh3_64 = xxhash.xxh64()
         file: BinaryIO
         with open(self.path, 'rb') as file:
             buf: bytes = file.read(blocksize)
@@ -468,28 +450,6 @@ def check_python() -> bool:
     return True
 
 
-def check_import() -> bool:
-    """Check modules import.
-
-    This function check the modules, log the result and return a status
-    True/False.
-
-    Returns:
-        True if successful, False otherwise.
-
-    Examples:
-        >>> check_import()
-        True
-
-    """
-    if IMPORT_DONE:
-        logger.info(LOG_MSG.python_import.info)
-        return True
-    logger.error(LOG_MSG.python_import.error)
-    logger.debug(LOG_MSG.python_import.debug, IMPORT_EXCEPTION)
-    return False
-
-
 def define_logfile() -> None:
     """Define the logfile.
 
@@ -571,7 +531,7 @@ def main() -> ExitStatus:
         logger.setLevel(logging.DEBUG)
     if args.logfile:
         define_logfile()
-    if not check_python() or not check_import():
+    if not check_python():
         return ExitStatus.EX_CONFIG
     if not check_arg(args):
         return ExitStatus.EX_USAGE

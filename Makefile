@@ -38,4 +38,8 @@ test:
 doc:
 	@pyreverse -ASmy -o mmd src/$(PACKAGE_DIR)/$(PACKAGE_NAME).py -d doc
 
+docstring2md:
+	@export_docstring2md -p $(PACKAGE_DIR) --output-file README.md -mmd doc/classes_smoothprogressbar.mmd -tml pyproject.toml -td doc/todo.md --private-def --toc
+
+
 .PHONY: default install uninstall dev test doc
