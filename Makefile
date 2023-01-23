@@ -41,5 +41,10 @@ doc:
 docstring2md:
 	@export_docstring2md -p $(PACKAGE_DIR) --output-file README.md -mmd doc/classes.mmd -tml pyproject.toml --toc
 
+publish:
+	@pytest --pyargs $(PACKAGE_NAME)
+	@git add .
+	@git commit
+	@git push
 
-.PHONY: default install uninstall dev test doc
+.PHONY: default install uninstall dev test doc publish

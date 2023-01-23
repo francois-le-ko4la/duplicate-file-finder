@@ -57,9 +57,6 @@ COMPATIBILITY:
 
 EXIT STATUS:
     This script exits 0 on success, and >0 if an error occurs.
-
-HISTORY:
-    0.1.0:  First release
 ```
 
 # Compatibility:
@@ -115,7 +112,7 @@ This package is distributed under the [GPLv3 license](./LICENSE)
 # -*- coding: utf-8 -*-
 [project]
 name = "duplicatefile"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
   {name = "ko4la" }
 ]
@@ -154,8 +151,7 @@ dev = [
     "pytest-mypy",
     "pytest-pydocstyle",
     "pytest-isort",
-    "types-setuptools",
-    "types-PyYAML"]
+    "types-setuptools"]
 
 [project.urls]
 "Homepage" = "https://github.com/francois-le-ko4la/duplicate-file-finder"

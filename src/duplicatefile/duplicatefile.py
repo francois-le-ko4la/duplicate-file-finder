@@ -44,9 +44,6 @@ COMPATIBILITY:
 
 EXIT STATUS:
     This script exits 0 on success, and >0 if an error occurs.
-
-HISTORY:
-    0.1.0:  First release
 """
 
 # ------------------------------------------------------------------------------
