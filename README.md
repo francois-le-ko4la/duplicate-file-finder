@@ -69,7 +69,7 @@ Get the package:
 ```shell
 $ git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
 ```
-Enter in the directory:
+Change to the folder:
 ```shell
 $ cd duplicate-file-finder
 ```
@@ -84,7 +84,7 @@ Get the package:
 ```shell
 $ git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
 ```
-Enter in the directory:
+Change to the folder:
 ```shell
 $ cd duplicate-file-finder
 ```

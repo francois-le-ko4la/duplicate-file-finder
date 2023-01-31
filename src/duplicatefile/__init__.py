@@ -73,7 +73,7 @@ Setup:
     ```shell
     $ git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
     ```
-    Enter in the directory:
+    Change to the folder:
     ```shell
     $ cd duplicate-file-finder
     ```
@@ -88,7 +88,7 @@ Setup:
     ```shell
     $ git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
     ```
-    Enter in the directory:
+    Change to the folder:
     ```shell
     $ cd duplicate-file-finder
     ```
