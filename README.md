@@ -67,26 +67,26 @@ Python 3.7+
 
 Get the package:
 ```shell
-$ git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
+git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
 ```
 Change to the folder:
 ```shell
-$ cd duplicate-file-finder
+cd duplicate-file-finder
 ```
 Install with make on Linux/Unix/MacOS or use pip3 otherwise:
 ```shell
-$ make install
+make install
 ```
 
 - Dev environment:
 
 Get the package:
 ```shell
-$ git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
+git clone https://github.com/francois-le-ko4la/duplicate-file-finder.git
 ```
 Change to the folder:
 ```shell
-$ cd duplicate-file-finder
+cd duplicate-file-finder
 ```
 Create your environment with all dev prerequisites and install the package:
 ```shell
