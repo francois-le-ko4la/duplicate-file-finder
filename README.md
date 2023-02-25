@@ -1,10 +1,16 @@
-# Duplicate file finder:
-[![badge](https://forthebadge.com/images/badges/made-with-python.svg)]()
-![](./doc/pycodestyle-passing.svg)
-![](./doc/pylint-passing.svg)
-![](./doc/mypy-passing.svg)
+<p align="center">
+  <img src="https://forthebadge.com/images/badges/made-with-python.svg" height="30" />
+  <img src="https://img.shields.io/badge/Work_on-Linux_MACOS_Windows-0071C5?style=for-the-badge&logoColor=white" height="30" />
+  <br />
+  <img src="https://img.shields.io/github/v/release/francois-le-ko4la/duplicate-file-finder?display_name=tag" />
+  <img src="https://img.shields.io/badge/python-3.7%2B-blue" />
+  <img src="https://img.shields.io/badge/PYCODESTYLE-PASSING-green" />
+  <img src="https://img.shields.io/badge/PYLINT-PASSING-green" />
+  <img src="https://img.shields.io/badge/MYPY-PASSING-green" />
+  <img src="https://img.shields.io/github/license/francois-le-ko4la/duplicate-file-finder" />
+</p>
 
-# Description:
+# Duplicate file finder:
 
 Yes, another duplicate file finder with Python...
 
